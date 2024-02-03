@@ -1,28 +1,20 @@
-Mediawiki
-Helm chart for mediawiki to deploy on kubernetes
-
+<h1>**Mediawiki**</h1>
+Used Helm charts for mediawiki to deploy on Azure Kubernetes services (AKS).
+In this assignment, I have added 4 environments ( Dev, Integration, operations & test ) for enhancing the deployment for different environments using Azure DevOps End to End automation.
 Pre-requisites
-1.) A Kubernetes cluster on cloud or Raspberry pi. You can also run a minikube or docker for windows desktop .
-2.) Helm
-3.) kubectl
+Using Pre-cluster-config-steps.yml file used ( /pipelines/templates/steps ), installing az cli, kubectl & helm on the Azure DevOps Yaml pipeline agent. The agent pool is added for each environment under path: Thoughtworks_Arko\pipelines\templates\vars\cd-release-vars.yml.
 
-versions installed on my machine .
-kubernetes v1.19.3
-helm v3.5.2
-docker image > achandre/mediawiki
+Each environment values.yaml files present in path: Thoughtworks_Arko\Apps_conf\AKS\environments
+Also, for security scanning on the K8s cluster, I have used CheckOV, which is an Open-Source antivirus engine for detecting trojans, viruses, malware & other malicious threats.
+Pipeline End to End Automation steps:
+The repo contains three charts: ( Path: Thoughtworks_Arko\Apps_conf\AKS\Helm )
+1.)ClamAV -> To detect  trojans, viruses, malware for docker containers running on cluster
+2)  mediawiki -> It runs mediawiki app
+3) mariadb -> It runs database for mediawiki app.
+Now, Using Aure DevOps Yaml pipeline (End to End Automation), Needs to trigger the cd-release.yml file (Path: Thoughtworks_Arko\pipelines\cd-release.yml). So, whenever there is a change in code or a pull requests trigger the pipeline as well.
 
-How to run
-The repo conatines two charts .
+Note: The secrets (password for DB) are stored in Key-Vault of Azure and it’s been retrieved in the PowerShell script while running the helm install commands.
 
-1.) mediawiki-chart runs mediawiki app
-2.) mediawiki-mariadb-chart runs database for mediawiki app.
+The application will be served on the external ip provided by load balancer . In my case it was > http://localhost:8080. The databse host will be available at database:3306.
+At the end of configuration , LocalSettings.php will be downloaded . The same file need to be placed at /var/www/html inside container . This can be done by removing commented hostmount in deployment.yaml of mediawiki chart and providing a hostmount path.
 
-To deploy, hop over to the chart and execute below command
-
-helm install chartname /directory
-
-example > helm install mediawiki ./mediawiki-chart and helm install database ./mediawiki-mariadb-chart
-
-The application will be served on the external ip provided by load balancer . In my case it was > http://localhost:8080. The databse host will be available at database:3306. Set the db root password, username and db name from values file placed inside mediawiki-mariadb-chart . Use the same to configure mediawiki db details page .
-
-At the end of configuartion , LocalSettings.php will be downloaded . The same file need to be placed at /var/www/html inside conatiner . This can be done by removing commented hostmount in deployment.yaml of mediawiki-chart and providing a hostmount path.
