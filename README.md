@@ -1,12 +1,16 @@
-<h1>**Mediawiki**</h1>
+<h1>Mediawiki</h1>
 Used Helm charts for mediawiki to deploy on Azure Kubernetes services (AKS).
+
 In this assignment, I have added 4 environments ( Dev, Integration, operations & test ) for enhancing the deployment for different environments using Azure DevOps End to End automation.
-Pre-requisites
-Using Pre-cluster-config-steps.yml file used ( /pipelines/templates/steps ), installing az cli, kubectl & helm on the Azure DevOps Yaml pipeline agent. The agent pool is added for each environment under path: Thoughtworks_Arko\pipelines\templates\vars\cd-release-vars.yml.
+
+<h1>Pre-requisites:</h1>
+Using Pre-cluster-config-steps.yml file used ( /pipelines/templates/steps ), installing az cli, kubectl & helm on the Azure DevOps Yaml pipeline agent. 
+The agent pool is added for each environment under path: Thoughtworks_Arko\pipelines\templates\vars\cd-release-vars.yml.
 
 Each environment values.yaml files present in path: Thoughtworks_Arko\Apps_conf\AKS\environments
 Also, for security scanning on the K8s cluster, I have used CheckOV, which is an Open-Source antivirus engine for detecting trojans, viruses, malware & other malicious threats.
-Pipeline End to End Automation steps:
+
+<h1>Pipeline End to End Automation steps:</h1>
 The repo contains three charts: ( Path: Thoughtworks_Arko\Apps_conf\AKS\Helm )
 1.)ClamAV -> To detect  trojans, viruses, malware for docker containers running on cluster
 2)  mediawiki -> It runs mediawiki app
