@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: "1.9"
+description: An Open-Source antivirus engine for detecting trojans, viruses, malware & other malicious threats.
+name: chart.clamav
+#version: 1.0.5 this was the version of the official chart
+version: 1.0.5-16 #This is the version customized by us
+home: https://www.clamav.net
+icon: https://www.clamav.net/assets/clamav-trademark.png
+maintainers:
+- name: Flowing
+  email: ops@flowing.it
+- name: zakkg3
+  email: zakkg3@gmail.com

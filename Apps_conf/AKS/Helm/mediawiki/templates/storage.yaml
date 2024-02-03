@@ -1,0 +1,10 @@
+# Required to sustain persistent messages for quorum queues
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: mediawiki-storage
+provisioner: kubernetes.io/azure-disk
+parameters:
+  storageaccounttype: {{ .Values.storage.sku }}
+  kind: managed

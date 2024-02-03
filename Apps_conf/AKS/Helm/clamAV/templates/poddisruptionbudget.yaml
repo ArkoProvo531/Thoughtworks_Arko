@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: clamav
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: clamav
+      app.kubernetes.io/instance: clamav

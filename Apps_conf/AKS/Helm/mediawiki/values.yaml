@@ -1,0 +1,36 @@
+replicaCount: 2
+
+image:
+  repository: test-mediawiki
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: LoadBalancer
+  port: 8080
+  targetport: 8080
+
+storage: 
+  sku: StandardSSD_LRS
+  size: "10Gi"
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: test.com
+      paths: []
+  tls: []
+
+resources: {}
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 60

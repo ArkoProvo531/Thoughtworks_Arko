@@ -1,0 +1,131 @@
+### Build & Release
+name: $(Build.BuildId)
+
+trigger: none
+
+parameters:
+- name: Environment
+  type: string
+  default: D
+  values:
+  - D
+  - T
+  - O
+  - I
+
+- name: Region
+  type: string
+  default: weu
+  values:
+  - bzn
+  - cnc 
+  - cin
+
+- name: Subscription
+  type: string
+  default: 'Azure RM - Assignment'
+  values:
+  - Azure Assignment - works
+
+- name: configureCluster
+  displayName: 'Configure Cluster?'
+  type: boolean
+  default: false
+
+- name: regionObject
+  displayName: 'Region Map'
+  type: object
+  default:
+  - bzn: 'brazilsouth'
+  - cnc: 'canadacentral'
+  - cin: 'centralindia'
+
+- name: ACR_name
+  type: string
+  default: 'Container Registry - Dev'
+  values:
+  - Container Registry - test 
+
+variables:
+## Variable group from pipelines library
+- group: Assignment-values
+### Nigthly vars
+- name: environment
+  ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
+    value: 'T'
+  ${{ else }}:
+    value: '${{ parameters.Environment }}' 
+- name: region
+  ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
+    value: 'weu'
+  ${{ else }}:
+    value: '${{ parameters.Region }}'
+- name: subscription
+  ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
+    value: 'Azure RM - QA (Ops)'
+  ${{ else }}:
+    value: '${{ parameters.Subscription }}'
+- name: configureCluster
+  ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
+    value: true
+  ${{ else }}:
+    value: '${{ parameters.configureCluster }}'     
+### Template vars    
+- template: templates/vars/cd-release-vars.yml
+  parameters: 
+    environment: ${{ variables.environment }}
+    region: ${{ variables.region }}
+### Job name vars
+
+stages:
+- stage: Docker_build_push_ACR
+  jobs:
+  - job: Build_and_Push
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Azure CLI Login'
+      inputs:
+        azureSubscription: 'service-connection-test'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'az acr login --name ${{ parameters.ACR_name }}'
+    - task: Docker@2
+      displayName: 'Build Docker image'
+      inputs:
+        containerRegistry: 'Container Registry - Dev'
+        repository: 'test-mediawiki'
+        command: 'build'
+        Dockerfile: './Dockerfile'
+        tags: |
+          $(VERSION_NUMBER)
+
+    - task: Docker@2
+      displayName: 'Push Docker image'
+      inputs:
+        containerRegistry: 'Container Registry - Dev'
+        repository: 'test-mediawiki'
+        command: 'push'
+        tags: |
+          $(VERSION_NUMBER)
+
+- stage: Configure
+  dependsOn: Docker_build_push_ACR
+  displayName: 'Configure Cluster Stage ${{ variables.environment }}' 
+  pool:
+    vmImage: ubuntu-latest  
+  jobs:              
+  - displayName: 'Configure Cluster ${{ variables.environment }} ${{ variables.region }}'
+    condition: eq('${{ variables.configureCluster }}', 'true')
+    environment: '${{ variables.environment }}'
+    timeoutInMinutes: 30
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: templates/steps/pre-cluster-config-steps.yml
+            parameters:    
+              environment: ${{ variables.environment }}
+              region: ${{ variables.region }}
+              subscription: ${{ variables.subscription }}

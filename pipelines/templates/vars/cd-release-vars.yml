@@ -1,0 +1,13 @@
+parameters:
+- name: environment
+  displayName: Environment
+  type: string
+- name: region
+  displayName: Region
+  type: string
+
+variables:  
+- name: agentPool
+  value: 'agp-${{ lower(parameters.region) }}-${{ lower(parameters.environment) }}' 
+- name: resourceGroupName
+  value: 'RG-${{ upper(parameters.region) }}-${{ upper(parameters.environment) }}'

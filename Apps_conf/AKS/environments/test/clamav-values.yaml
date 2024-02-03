@@ -1,0 +1,86 @@
+# Default values for ClamAV.
+
+replicaCount: 1
+
+pvc:
+  name: clamav-per-vol
+  storage: 1Gi
+  accessMode: ReadWriteOnce
+
+pv:
+  name: clamav-pv
+  storage: 1Gi
+  accessMode: ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+
+storageclass:
+  className: st-cl-clamav
+  storageaccounttype: Standard_SSD_LRS  
+
+image:
+  repository: clamav/clamav
+  tag: "1.1.1"
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  name: clamav
+  type: ClusterIP
+  port: 3310
+  targetPort: 3310
+
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# Use freshclamConfig to define the content of /etc/clamav/freshclam.conf. Example:
+# freshclamConfig: |
+#   HTTPProxyServer your-proxy.example.com
+#   HTTPProxyPort 8080
+#   DatabaseDirectory /data
+#   LogSyslog yes
+#   LogTime yes
+#   PidFile /run/clamav/freshclam.pid
+#   DatabaseOwner root
+#   DatabaseMirror database.clamav.net
+#   ScriptedUpdates yes
+#   NotifyClamd /etc/clamav/clamd.conf
+#   SafeBrowsing yes
+#   Bytecode yes
+
+resources:
+  limits:
+   cpu: 1000m
+   memory: 4Gi
+  requests:
+   cpu: 500m
+   memory: 2Gi
+
+# Additional pod labels
+podLabels:
+  component: clamav
+
+podDisruptionBudget: 1
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Metadata surrounding the kubernetes distribution being deployed to.
+kubeMeta:
+  # The api that Deployments are under.
+  deploymentApiVersion: apps/v1

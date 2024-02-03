@@ -1,0 +1,14 @@
+steps:
+- script: |
+   az aks install-cli
+   kubectl version --client
+   kubelogin --version
+  displayName: 'Install AKS CLI'
+
+- task: AzureCLI@2
+  displayName: 'Configure AKS cluster'
+  inputs:
+    azureSubscription: ${{ parameters.subscription }}
+    scriptType: pscore
+    scriptPath: 'Apps_conf/AKS/ConfigureCluster.ps1'
+    arguments: '-Region ${{ parameters.region }} -Environment ${{ parameters.environment }}'
