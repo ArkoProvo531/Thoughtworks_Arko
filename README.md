@@ -12,9 +12,13 @@ Also, for security scanning on the K8s cluster, I have used CheckOV, which is an
 
 <h1>Pipeline End to End Automation steps:</h1>
 The repo contains three charts: ( Path: Thoughtworks_Arko\Apps_conf\AKS\Helm )
-1.)ClamAV -> To detect  trojans, viruses, malware for docker containers running on cluster
-2)  mediawiki -> It runs mediawiki app
-3) mariadb -> It runs database for mediawiki app.
+
+1) ClamAV -> To detect  trojans, viruses, malware for docker containers running on cluster
+
+2) mediawiki -> It runs mediawiki app
+
+3) mariadb -> It runs database for mediawiki app
+
 Now, Using Aure DevOps Yaml pipeline (End to End Automation), Needs to trigger the cd-release.yml file (Path: Thoughtworks_Arko\pipelines\cd-release.yml). So, whenever there is a change in code or a pull requests trigger the pipeline as well.
 
 **Note:** The secrets (password for DB) are stored in Key-Vault of Azure and it’s been retrieved in the PowerShell script while running the helm install commands.
