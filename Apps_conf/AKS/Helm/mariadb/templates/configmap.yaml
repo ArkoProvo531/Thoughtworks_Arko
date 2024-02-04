@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}-cfmap
+  name: {{ .Values.env }}-cfmap
   labels:
     {{- include "database.labels" . | nindent 4 }}
 data:

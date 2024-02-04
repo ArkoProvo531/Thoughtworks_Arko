@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "mediawiki.fullname" . }}
+  name: {{ include "mediawiki.fullname" . }}-{{ .Values.env }}
   labels:
     {{- include "mediawiki.labels" . | nindent 4 }}
 spec:
@@ -29,7 +29,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Chart.Name }}-{{ .Values.env }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -42,14 +42,8 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
           - mountPath: /var/www/html/images
-            name: {{ .Chart.Name }}-data
-          #- mountPath: /var/www/html
-          #  name: {{ .Chart.Name }}-phplocalsettings
+            name: {{ .Values.env }}-data
       volumes:
-      - name: {{ .Chart.Name }}-data
+      - name: {{ .Values.env }}-data
         persistentVolumeClaim:
-          claimName: {{ .Chart.Name }}-data
-      #- name: {{ .Chart.Name }}-phplocalsettings
-      #  hostpath:
-      #    path: /c/phplocalsettings/LocalSettings.php
-      #    type: file
+          claimName: {{ .Values.env }}-pvc

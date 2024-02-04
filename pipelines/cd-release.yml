@@ -1,7 +1,11 @@
 ### Build & Release
 name: $(Build.BuildId)
 
-trigger: none
+trigger:
+- main
+
+pr:
+- '*'
 
 parameters:
 - name: Environment
@@ -30,7 +34,7 @@ parameters:
 - name: configureCluster
   displayName: 'Configure Cluster?'
   type: boolean
-  default: false
+  default: true
 
 - name: regionObject
   displayName: 'Region Map'
@@ -39,12 +43,6 @@ parameters:
   - bzn: 'brazilsouth'
   - cnc: 'canadacentral'
   - cin: 'centralindia'
-
-- name: ACR_name
-  type: string
-  default: 'Container Registry - Dev'
-  values:
-  - Container Registry - test 
 
 variables:
 ## Variable group from pipelines library
@@ -64,12 +62,7 @@ variables:
   ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
     value: 'Azure RM - QA (Ops)'
   ${{ else }}:
-    value: '${{ parameters.Subscription }}'
-- name: configureCluster
-  ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
-    value: true
-  ${{ else }}:
-    value: '${{ parameters.configureCluster }}'     
+    value: '${{ parameters.Subscription }}'    
 ### Template vars    
 - template: templates/vars/cd-release-vars.yml
   parameters: 
@@ -84,31 +77,29 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: AzureCLI@2
-      displayName: 'Azure CLI Login'
-      inputs:
-        azureSubscription: 'service-connection-test'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: 'az acr login --name ${{ parameters.ACR_name }}'
     - task: Docker@2
-      displayName: 'Build Docker image'
       inputs:
-        containerRegistry: 'Container Registry - Dev'
-        repository: 'test-mediawiki'
-        command: 'build'
-        Dockerfile: './Dockerfile'
+        command: login
+        containerRegistry: App-ACR
+    - task: Docker@2
+      displayName: Build and push Image for mediawiki App
+      inputs:
+        command: buildAndPush
+        repository: ${{ variables.environment }}-mediawiki
+        dockerfile: 'Apps_conf/Dockerfile'
+        containerRegistry: App-ACR
         tags: |
-          $(VERSION_NUMBER)
+          latest
 
     - task: Docker@2
-      displayName: 'Push Docker image'
+      displayName: Build and push Image for mariadb
       inputs:
-        containerRegistry: 'Container Registry - Dev'
-        repository: 'test-mediawiki'
-        command: 'push'
+        command: buildAndPush
+        repository: ${{ variables.environment }}-mariadb
+        dockerfile: 'Apps_conf/Dockerfile.mariadb'
+        containerRegistry: App-ACR
         tags: |
-          $(VERSION_NUMBER)
+          latest
 
 - stage: Configure
   dependsOn: Docker_build_push_ACR

@@ -3,7 +3,10 @@ steps:
    az aks install-cli
    kubectl version --client
    kubelogin --version
-  displayName: 'Install AKS CLI'
+   curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+   chmod 700 get_helm.sh
+   ./get_helm.sh
+  displayName: 'Install AKS CLI and helm'
 
 - task: AzureCLI@2
   displayName: 'Configure AKS cluster'
@@ -11,4 +14,4 @@ steps:
     azureSubscription: ${{ parameters.subscription }}
     scriptType: pscore
     scriptPath: 'Apps_conf/AKS/ConfigureCluster.ps1'
-    arguments: '-Region ${{ parameters.region }} -Environment ${{ parameters.environment }}'
+    arguments: '-Region ${{ parameters.region }} -Environment ${{ parameters.environment }}'  

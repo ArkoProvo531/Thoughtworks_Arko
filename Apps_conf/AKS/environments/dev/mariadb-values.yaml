@@ -1,12 +1,17 @@
 replicaCount: 1
-
+env: dev
 image:
-  repository: mariadb
+  repository: D-mariadb
   pullPolicy: IfNotPresent
   tag: "latest"
 
 MYSQL_DATABASE: db-mediawiki
 MYSQL_USER: user-sql
+
+request_storage_pvc: "5Gi"
+storage: 
+  sku: StandardSSD_LRS
+  size: "10Gi"
 
 service:
   type: ClusterIP

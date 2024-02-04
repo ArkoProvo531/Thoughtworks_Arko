@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "mediawiki.fullname" . }}
+  name: {{ include "mediawiki.fullname" . }}-{{ .Values.env }}
   labels:
     {{- include "mediawiki.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "mediawiki.fullname" . }}
+    name: {{ include "mediawiki.fullname" . }}-{{ .Values.env }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

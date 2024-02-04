@@ -1,0 +1,14 @@
+# Use an Opensource Red Hat-based image
+FROM centos:latest
+
+# Install required packages for MediaWiki
+RUN yum install -y mariadb-server mariadb wget tar \
+    yum clean all && \
+    rm -rf /var/cache/yum
+
+# Enable required for mariadb
+RUN systemctl enable mariadb
+
+# Start the MariaDB service
+RUN systemctl start mariadb && \
+    mysql_secure_installation -y

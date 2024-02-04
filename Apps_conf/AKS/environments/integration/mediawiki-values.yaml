@@ -1,7 +1,7 @@
 replicaCount: 2
-
+env: integration
 image:
-  repository: test-mediawiki
+  repository: I-mediawiki
   pullPolicy: IfNotPresent
   tag: "latest"
 
@@ -10,13 +10,15 @@ service:
   port: 8080
   targetport: 8080
 
+request_storage_pvc: "100Mi"
+
 storage: 
+  name: mediawiki-storage
   sku: StandardSSD_LRS
-  size: "10Gi"
 
 ingress:
-  enabled: false
-  annotations: {}
+  enabled: true
+  annotations: "kubernetes.io/ingress.class: azure/application-gateway"
   hosts:
     - host: test.com
       paths: []
