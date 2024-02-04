@@ -20,10 +20,10 @@ The repo contains three charts: ( Path: Thoughtworks_Arko\Apps_conf\AKS\Helm )
 3) mariadb -> It runs database for mediawiki app
 
 Now, Using Aure DevOps Yaml pipeline (End to End Automation), Needs to trigger the cd-release.yml file (Path: Thoughtworks_Arko\pipelines\cd-release.yml). So, whenever there is a change in code or a pull requests trigger the pipeline as well.
-In the powershell (path: Thoughtworks_Arko\Apps_conf\AKS\ConfigureCluster.ps1) -> As per the desired envionment required, the script will perform to configure each envionment with proper subscriptionID to deploy ClamAV Antivirus, then install mediawiki app and finally install the mariadb using helm.
+In the powershell (path: Thoughtworks_Arko\Apps_conf\AKS\ConfigureCluster.ps1) -> As per the desired environment required, the script will perform to configure each environment with proper subscriptionID to deploy ClamAV Antivirus, then install mediawiki app and finally install the mariadb using helm.
 
 As per the pipeline, it will build the Dockerfile and push the images to Azure Container Registry (ACR). Next it will run the powershell script which contains the helm install command to deploy the application.
 
 **Note:** The secrets (password for DB) are stored in Key-Vault of Azure and it’s been retrieved in the PowerShell script while running the helm install commands.
 
-**Note**: For scalling up the application, I have used Horizontal Pod Autoscaller (HPA) and for actively running the ClamAV antivirus, I have used Pod Distribution Budget (PDB).
+**Note**: For scalling up the application, I have used Horizontal Pod Autoscaller (HPA)
